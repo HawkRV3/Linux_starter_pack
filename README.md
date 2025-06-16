@@ -43,8 +43,8 @@ El script `secure-ubuntu.sh` realiza los siguientes pasos:
 1. Clona el repositorio:
 
    ```bash
-   git clone https://github.com/tu-usuario/secure-ubuntu.git
-   cd secure-ubuntu
+   git clone https://github.com/HawkRV3/Secure_script_linux.git
+   cd Secure_script_linux
 2. Da permisos de ejecución al script:
     ```bash
    chmod +x secure-ubuntu.sh
