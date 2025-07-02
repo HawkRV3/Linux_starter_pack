@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Script interactivo para gestionar Kalitorify
-# Autor: ChatGPT para Ipgamer 138
+# Script interactivo para gestionar Kalitorify desde su repositorio oficial
+# Requiere privilegios sudo para algunas acciones
 
 REPO_URL="https://github.com/brainfucksec/kalitorify.git"
 INSTALL_DIR="/opt/kalitorify"
@@ -16,7 +16,7 @@ RESET="\e[0m"
 banner() {
     echo -e "${CYAN}"
     echo "======================================"
-    echo "    🔥 KALITORIFY MANAGER 🔥"
+    echo "     🔥 KALITORIFY MANAGER 🔥"
     echo "======================================"
     echo -e "${RESET}"
 }
@@ -27,7 +27,7 @@ pause() {
 }
 
 check_installed() {
-    if [ -d "$INSTALL_DIR" ]; then
+    if [ -f "/usr/local/bin/kalitorify" ]; then
         return 0
     else
         return 1
@@ -35,38 +35,42 @@ check_installed() {
 }
 
 install_kalitorify() {
-    echo -e "${CYAN}[+] Instalando Kalitorify...${RESET}"
+    echo -e "${CYAN}[+] Instalando Kalitorify desde GitHub...${RESET}"
     sudo apt update
-    sudo apt install -y tor curl iptables
+    sudo apt install -y tor curl iptables git
     sudo git clone "$REPO_URL" "$INSTALL_DIR"
     sudo chmod +x "$INSTALL_DIR/kalitorify"
     sudo ln -sf "$INSTALL_DIR/kalitorify" /usr/local/bin/kalitorify
-    echo -e "${GREEN}[✔] Instalación completada.${RESET}"
+    echo -e "${GREEN}[✔] Kalitorify instalado correctamente.${RESET}"
 }
 
 activate_kalitorify() {
-    echo -e "${CYAN}[+] Activando Kalitorify...${RESET}"
+    echo -e "${CYAN}[+] Ejecutando: kalitorify --start${RESET}"
     sudo kalitorify --start
 }
 
 stop_kalitorify() {
-    echo -e "${CYAN}[+] Deteniendo Kalitorify...${RESET}"
+    echo -e "${CYAN}[+] Ejecutando: kalitorify --stop${RESET}"
     sudo kalitorify --stop
 }
 
 status_kalitorify() {
-    echo -e "${CYAN}[i] Estado de Kalitorify:${RESET}"
+    echo -e "${CYAN}[+] Ejecutando: kalitorify --status${RESET}"
     sudo kalitorify --status
 }
 
+flush_kalitorify() {
+    echo -e "${CYAN}[+] Ejecutando: kalitorify --flush${RESET}"
+    sudo kalitorify --flush
+}
+
 customize_kalitorify() {
-    echo -e "${YELLOW}[!] Personalización: se editará el script directamente.${RESET}"
-    echo "Editando archivo con nano (usa con precaución)..."
+    echo -e "${YELLOW}[!] Editando el script de Kalitorify...${RESET}"
     sudo nano "$INSTALL_DIR/kalitorify"
 }
 
 remove_kalitorify() {
-    echo -e "${RED}[!] Eliminando Kalitorify...${RESET}"
+    echo -e "${RED}[!] Eliminando Kalitorify completamente...${RESET}"
     sudo rm -f /usr/local/bin/kalitorify
     sudo rm -rf "$INSTALL_DIR"
     echo -e "${GREEN}[✔] Kalitorify eliminado.${RESET}"
@@ -77,12 +81,13 @@ main_menu() {
         clear
         banner
         echo "1. Instalar Kalitorify"
-        echo "2. Activar Kalitorify (start)"
-        echo "3. Detener Kalitorify (stop)"
-        echo "4. Mostrar estado (status)"
-        echo "5. Personalizar Kalitorify"
-        echo "6. Eliminar Kalitorify"
-        echo "7. Salir"
+        echo "2. Activar red TOR (kalitorify --start)"
+        echo "3. Detener red TOR (kalitorify --stop)"
+        echo "4. Ver estado (kalitorify --status)"
+        echo "5. Limpiar iptables (kalitorify --flush)"
+        echo "6. Personalizar Kalitorify"
+        echo "7. Eliminar Kalitorify"
+        echo "8. Salir"
         echo -n -e "\nSelecciona una opción: "
         read -r opcion
         case $opcion in
@@ -90,9 +95,10 @@ main_menu() {
             2) activate_kalitorify ;;
             3) stop_kalitorify ;;
             4) status_kalitorify ;;
-            5) customize_kalitorify ;;
-            6) remove_kalitorify ;;
-            7) echo "¡Hasta luego!"; exit 0 ;;
+            5) flush_kalitorify ;;
+            6) customize_kalitorify ;;
+            7) remove_kalitorify ;;
+            8) echo "¡Hasta luego!"; exit 0 ;;
             *) echo -e "${RED}Opción inválida.${RESET}" ;;
         esac
         pause
