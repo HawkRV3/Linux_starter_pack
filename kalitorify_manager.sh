@@ -1,10 +1,11 @@
 #!/bin/bash
 
-# Script interactivo para gestionar Kalitorify desde su repositorio oficial
-# Requiere privilegios sudo para algunas acciones
+# Script interactivo para gestionar Kalitorify
+# Versión actualizada con instalación oficial por make
+# Autor: ChatGPT para Ipgamer 138
 
 REPO_URL="https://github.com/brainfucksec/kalitorify.git"
-INSTALL_DIR="/opt/kalitorify"
+KALI_DIR="./kalitorify"
 
 # Colores
 RED="\e[31m"
@@ -27,7 +28,7 @@ pause() {
 }
 
 check_installed() {
-    if [ -f "/usr/local/bin/kalitorify" ]; then
+    if command -v kalitorify &> /dev/null; then
         return 0
     else
         return 1
@@ -35,13 +36,26 @@ check_installed() {
 }
 
 install_kalitorify() {
-    echo -e "${CYAN}[+] Instalando Kalitorify desde GitHub...${RESET}"
-    sudo apt update
-    sudo apt install -y tor curl iptables git
-    sudo git clone "$REPO_URL" "$INSTALL_DIR"
-    sudo chmod +x "$INSTALL_DIR/kalitorify"
-    sudo ln -sf "$INSTALL_DIR/kalitorify" /usr/local/bin/kalitorify
-    echo -e "${GREEN}[✔] Kalitorify instalado correctamente.${RESET}"
+    echo -e "${CYAN}[+] Clonando Kalitorify en el directorio actual...${RESET}"
+    git clone "$REPO_URL" || {
+        echo -e "${RED}[✖] Error al clonar el repositorio.${RESET}"
+        return 1
+    }
+
+    echo -e "${CYAN}[+] Actualizando el sistema e instalando dependencias...${RESET}"
+    sudo apt-get update && sudo apt-get dist-upgrade -y
+    sudo apt-get install -y tor curl make
+
+    echo -e "${CYAN}[+] Instalando Kalitorify con make...${RESET}"
+    cd "$KALI_DIR" || { echo -e "${RED}[✖] No se pudo entrar al directorio ${KALI_DIR}.${RESET}"; return 1; }
+
+    sudo make install
+
+    if command -v kalitorify &> /dev/null; then
+        echo -e "${GREEN}[✔] Kalitorify instalado correctamente y accesible globalmente.${RESET}"
+    else
+        echo -e "${RED}[✖] Kalitorify no se encuentra en el PATH.${RESET}"
+    fi
 }
 
 activate_kalitorify() {
@@ -66,13 +80,17 @@ flush_kalitorify() {
 
 customize_kalitorify() {
     echo -e "${YELLOW}[!] Editando el script de Kalitorify...${RESET}"
-    sudo nano "$INSTALL_DIR/kalitorify"
+    if [ -f "$KALI_DIR/kalitorify" ]; then
+        sudo nano "$KALI_DIR/kalitorify"
+    else
+        echo -e "${RED}[✖] No se encontró el archivo en $KALI_DIR/kalitorify${RESET}"
+    fi
 }
 
 remove_kalitorify() {
-    echo -e "${RED}[!] Eliminando Kalitorify completamente...${RESET}"
-    sudo rm -f /usr/local/bin/kalitorify
-    sudo rm -rf "$INSTALL_DIR"
+    echo -e "${RED}[!] Desinstalando Kalitorify...${RESET}"
+    sudo make -C "$KALI_DIR" uninstall
+    rm -rf "$KALI_DIR"
     echo -e "${GREEN}[✔] Kalitorify eliminado.${RESET}"
 }
 
@@ -92,10 +110,10 @@ main_menu() {
         read -r opcion
         case $opcion in
             1) install_kalitorify ;;
-            2) activate_kalitorify ;;
-            3) stop_kalitorify ;;
-            4) status_kalitorify ;;
-            5) flush_kalitorify ;;
+            2) check_installed && activate_kalitorify || echo -e "${RED}[✖] Kalitorify no está instalado.${RESET}" ;;
+            3) check_installed && stop_kalitorify || echo -e "${RED}[✖] Kalitorify no está instalado.${RESET}" ;;
+            4) check_installed && status_kalitorify || echo -e "${RED}[✖] Kalitorify no está instalado.${RESET}" ;;
+            5) check_installed && flush_kalitorify || echo -e "${RED}[✖] Kalitorify no está instalado.${RESET}" ;;
             6) customize_kalitorify ;;
             7) remove_kalitorify ;;
             8) echo "¡Hasta luego!"; exit 0 ;;
