@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# Script interactivo para gestionar Kalitorify
-# Versión actualizada con instalación oficial por make
-# Autor: ChatGPT para Ipgamer 138
+# Script simplificado para instalar y eliminar Kalitorify
+# Autor: Ian
 
 REPO_URL="https://github.com/brainfucksec/kalitorify.git"
 KALI_DIR="./kalitorify"
@@ -27,14 +26,6 @@ pause() {
     read
 }
 
-check_installed() {
-    if command -v kalitorify &> /dev/null; then
-        return 0
-    else
-        return 1
-    fi
-}
-
 install_kalitorify() {
     echo -e "${CYAN}[+] Clonando Kalitorify en el directorio actual...${RESET}"
     git clone "$REPO_URL" || {
@@ -47,50 +38,35 @@ install_kalitorify() {
     sudo apt-get install -y tor curl make
 
     echo -e "${CYAN}[+] Instalando Kalitorify con make...${RESET}"
-    cd "$KALI_DIR" || { echo -e "${RED}[✖] No se pudo entrar al directorio ${KALI_DIR}.${RESET}"; return 1; }
+    cd "$KALI_DIR" || {
+        echo -e "${RED}[✖] No se pudo entrar al directorio $KALI_DIR.${RESET}"
+        return 1
+    }
 
     sudo make install
 
     if command -v kalitorify &> /dev/null; then
-        echo -e "${GREEN}[✔] Kalitorify instalado correctamente y accesible globalmente.${RESET}"
+        echo -e "${GREEN}[✔] Kalitorify instalado correctamente.${RESET}"
     else
         echo -e "${RED}[✖] Kalitorify no se encuentra en el PATH.${RESET}"
     fi
 }
 
-activate_kalitorify() {
-    echo -e "${CYAN}[+] Ejecutando: kalitorify --start${RESET}"
-    sudo kalitorify --start
-}
-
-stop_kalitorify() {
-    echo -e "${CYAN}[+] Ejecutando: kalitorify --stop${RESET}"
-    sudo kalitorify --stop
-}
-
-status_kalitorify() {
-    echo -e "${CYAN}[+] Ejecutando: kalitorify --status${RESET}"
-    sudo kalitorify --status
-}
-
-flush_kalitorify() {
-    echo -e "${CYAN}[+] Ejecutando: kalitorify --flush${RESET}"
-    sudo kalitorify --flush
-}
-
-customize_kalitorify() {
-    echo -e "${YELLOW}[!] Editando el script de Kalitorify...${RESET}"
-    if [ -f "$KALI_DIR/kalitorify" ]; then
-        sudo nano "$KALI_DIR/kalitorify"
-    else
-        echo -e "${RED}[✖] No se encontró el archivo en $KALI_DIR/kalitorify${RESET}"
-    fi
-}
-
 remove_kalitorify() {
     echo -e "${RED}[!] Desinstalando Kalitorify...${RESET}"
-    sudo make -C "$KALI_DIR" uninstall
-    rm -rf "$KALI_DIR"
+    
+    if [ -d "$KALI_DIR" ]; then
+        echo -e "${YELLOW}[i] Ejecutando make uninstall desde $KALI_DIR...${RESET}"
+        sudo make -C "$KALI_DIR" uninstall
+        rm -rf "$KALI_DIR"
+    else
+        echo -e "${YELLOW}[!] No se encontró el directorio git. Procediendo con eliminación manual.${RESET}"
+        sudo rm -ri /usr/bin/kalitorify \
+                   /usr/share/kalitorify \
+                   /usr/share/doc/kalitorify \
+                   /var/lib/kalitorify
+    fi
+
     echo -e "${GREEN}[✔] Kalitorify eliminado.${RESET}"
 }
 
@@ -99,24 +75,14 @@ main_menu() {
         clear
         banner
         echo "1. Instalar Kalitorify"
-        echo "2. Activar red TOR (kalitorify --start)"
-        echo "3. Detener red TOR (kalitorify --stop)"
-        echo "4. Ver estado (kalitorify --status)"
-        echo "5. Limpiar iptables (kalitorify --flush)"
-        echo "6. Personalizar Kalitorify"
-        echo "7. Eliminar Kalitorify"
-        echo "8. Salir"
+        echo "2. Eliminar Kalitorify"
+        echo "3. Salir"
         echo -n -e "\nSelecciona una opción: "
         read -r opcion
         case $opcion in
             1) install_kalitorify ;;
-            2) check_installed && activate_kalitorify || echo -e "${RED}[✖] Kalitorify no está instalado.${RESET}" ;;
-            3) check_installed && stop_kalitorify || echo -e "${RED}[✖] Kalitorify no está instalado.${RESET}" ;;
-            4) check_installed && status_kalitorify || echo -e "${RED}[✖] Kalitorify no está instalado.${RESET}" ;;
-            5) check_installed && flush_kalitorify || echo -e "${RED}[✖] Kalitorify no está instalado.${RESET}" ;;
-            6) customize_kalitorify ;;
-            7) remove_kalitorify ;;
-            8) echo "¡Hasta luego!"; exit 0 ;;
+            2) remove_kalitorify ;;
+            3) echo "¡Hasta luego!"; exit 0 ;;
             *) echo -e "${RED}Opción inválida.${RESET}" ;;
         esac
         pause
