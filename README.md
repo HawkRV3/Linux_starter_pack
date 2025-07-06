@@ -1,67 +1,132 @@
-# 🔐 Secure-Ubuntu Script
+# 🔐 Starter Pack: Seguridad, Monitoreo y Anonimato para Ubuntu
 
-Este repositorio contiene un script Bash automatizado para fortalecer la seguridad básica de una instalación de Ubuntu. El objetivo es proteger el sistema desde el primer momento aplicando configuraciones recomendadas para un entorno seguro.
-
----
-
-## 📜 ¿Qué hace este script?
-
-El script `secure-ubuntu.sh` realiza los siguientes pasos:
-
-1. **Configura el firewall (UFW):**
-   - Deniega todas las conexiones entrantes por defecto.
-   - Permite solo el tráfico saliente.
-   - Abre el puerto SSH (se cambiará después).
-
-2. **Instala y configura Fail2ban:**
-   - Protege contra intentos de fuerza bruta en el servicio SSH.
-   - Aplica una política de bloqueo temporal tras múltiples intentos fallidos.
-
-3. **Instala y activa Auditd:**
-   - Registra eventos importantes del sistema, útil para auditoría y análisis forense.
-
-4. **Modifica la configuración de SSH:**
-   - Cambia el puerto por defecto (`22`) a un puerto personalizado (`2222` por defecto).
-   - Desactiva el acceso de root por SSH.
-   - Desactiva la autenticación por contraseña (solo claves SSH).
-
-5. **Activa actualizaciones automáticas:**
-   - Instala y configura el paquete `unattended-upgrades` para mantener el sistema actualizado sin intervención manual.
+Autor: **PT&A**  
+Versión: **1.0 - 2025-07-06**
 
 ---
 
-## ⚙️ Requisitos
+## 📦 Descripción General
 
-- Ubuntu 20.04, 22.04 o superior
-- Acceso como usuario root o privilegios `sudo`
-- Conexión a internet
+**starter_pack** es un script interactivo diseñado para sistemas **Ubuntu** que automatiza tres funciones esenciales:
+
+1. **Endurecimiento (Hardening)** del sistema para reforzar la seguridad.
+2. **Instalación de herramientas de monitoreo** para supervisar el rendimiento de hardware.
+3. **Implementación de Kalitorify**, una herramienta de anonimato que enruta el tráfico por la red TOR.
+
+> Ideal para entornos personales, laboratorios de ciberseguridad, profesionales de IT y usuarios nuevos.
 
 ---
 
-## 🚀 Cómo usar
+## 🧰 Funcionalidades Detalladas
 
-1. Clona el repositorio:
+### 1. 🛡 Endurecimiento del sistema
+Este módulo implementa medidas básicas de seguridad:
+- **Cambia el puerto SSH** a `2222` y desactiva el login por contraseña y acceso root.
+- **Activa el firewall UFW** con reglas restrictivas.
+- **Instala Fail2ban** para bloquear intentos de fuerza bruta por SSH.
+- **Habilita actualizaciones automáticas** con `unattended-upgrades`.
+- **Instala Auditd** para auditar actividades del sistema.
 
-   ```bash
-   git clone https://github.com/HawkRV3/Secure_script_linux.git
-   cd Secure_script_linux
-2. Da permisos de ejecución al script:
-    ```bash
-   chmod +x secure-ubuntu.sh
+> Puede revertirse automáticamente desde el menú.
 
-3. Ejecuta el script con sudo:
-    ```bash
-   sudo ./secure-ubuntu.sh
-
-4. (Opcional) Verifica el estado de los servicios instalados:
-    ```bash
-    sudo systemctl status ufw
-    sudo systemctl status fail2ban
-    sudo systemctl status auditd
 ---
 
-## ⚠️ Notas importantes
+### 2. 📊 Herramientas de Monitoreo
+Instala utilidades para monitorear recursos del sistema:
+- `htop`, `nvtop`: Monitorización de CPU y GPU.
+- `sysstat`, `lm-sensors`: Estadísticas de sistema y sensores térmicos.
+- `nvidia-smi` (si se detecta GPU NVIDIA).
+- Script personalizado que guarda cada 10 minutos la información de CPU, RAM, discos, sensores y GPU en `/opt/monitoring_tools/monitor.log`.
 
-1. 🔐 Puerto SSH cambiado: El puerto SSH predeterminado se cambia a 2222
-2. 🔥 UFW (Firewall): Si tienes otros servicios corriendo en el servidor, deberás permitir manualmente sus puertos con UFW
-3. 🛑 Fail2ban: Las reglas están configuradas para proteger el nuevo puerto SSH. Si cambias ese puerto en el futuro, asegúrate de actualizar también
+> También se crea un alias `gpustat` en `/etc/bash.bashrc` para ver el estado de la GPU fácilmente.
+
+---
+
+### 3. 🔍 Kalitorify
+Instala [Kalitorify](https://github.com/brainfucksec/kalitorify), un proxy transparente que enruta todo el tráfico por la red TOR, permitiendo un alto nivel de anonimato en la navegación.
+
+Incluye:
+- Clonación y compilación del repositorio.
+- Dependencias necesarias (`tor`, `curl`, `make`).
+- Verificación de instalación en el sistema.
+
+> Elimina todos los componentes con una opción del menú.
+
+---
+
+### 4. ⚙ Instalación/Reversión Total
+- Puedes aplicar todas las configuraciones de seguridad, monitoreo y anonimato con una sola opción.
+- También puedes **revertir todos los cambios** con otro comando si algo falla o ya no lo necesitas.
+
+---
+
+## ▶️ Cómo Usarlo
+
+### 🔒 Requisitos
+- Distribución basada en **Ubuntu**.
+- Ejecutar como **root** (o con `sudo`).
+
+### 💻 Ejecución
+```bash
+chmod +x starter_pack.sh
+sudo ./starter_pack.sh
+```
+
+### 🧭 Menú Interactivo
+```
+1) Endurecimiento del sistema
+2) Deshacer endurecimiento del sistema
+3) Instalar herramientas de monitoreo
+4) Eliminar herramientas de monitoreo
+5) Instalar Kalitorify
+6) Eliminar Kalitorify
+7) Instalar TODO (hardening + monitoreo + kalitorify)
+8) Revertir TODO
+9) Salir
+```
+
+---
+
+## 🔗 Repositorios Oficiales de Herramientas
+
+- **Kalitorify**  
+  https://github.com/brainfucksec/kalitorify
+
+- **Fail2ban**  
+  https://github.com/fail2ban/fail2ban
+
+- **UFW (Uncomplicated Firewall)**  
+  https://wiki.ubuntu.com/UncomplicatedFirewall
+
+- **Auditd**  
+  https://github.com/linux-audit/audit-userspace
+
+- **htop**  
+  https://github.com/htop-dev/htop
+
+- **nvtop**  
+  https://github.com/Syllo/nvtop
+
+- **sysstat**  
+  https://github.com/sysstat/sysstat
+
+- **lm-sensors**  
+  https://github.com/lm-sensors/lm-sensors
+
+- **unattended-upgrades**  
+  https://wiki.debian.org/UnattendedUpgrades
+
+- **nvidia-smi**  
+  https://developer.nvidia.com/nvidia-system-management-interface
+
+---
+
+## ⚠️ Disclaimer
+
+> **Este script se proporciona con fines educativos y de automatización para administradores y usuarios primerizos.**
+>
+> - El uso indebido de herramientas como Kalitorify podría violar términos de uso de algunas redes.
+> - No nos hacemos responsables por daños, pérdidas o problemas de conectividad derivados del uso de este script.
+> - **Recomendamos probarlo en un entorno virtualizado antes de aplicarlo en sistemas de producción.**
+
+---
