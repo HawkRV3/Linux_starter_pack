@@ -54,7 +54,16 @@ Incluye:
 
 ---
 
-### 4. ⚙ Instalación/Reversión Total
+### 4. 📚 Instalación de `tldr`
+Se instala la herramienta `tldr`, que ofrece páginas de ayuda simplificadas y ejemplos para comandos comunes.
+
+**Manual rápido:**
+- Ejecuta `tldr <comando>` para ver un resumen amigable de cómo usar un comando.  
+  Ejemplo: `tldr tar`
+
+---
+
+### 5. ⚙ Instalación/Reversión Total
 - Puedes aplicar todas las configuraciones de seguridad, monitoreo y anonimato con una sola opción.
 - También puedes **revertir todos los cambios** con otro comando si algo falla o ya no lo necesitas.
 
@@ -118,6 +127,9 @@ sudo ./starter_pack.sh
 
 - **nvidia-smi**  
   https://developer.nvidia.com/nvidia-system-management-interface
+
+- **tldr**
+  https://github.com/tldr-pages/tldr
 
 ---
 
